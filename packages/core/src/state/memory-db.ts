@@ -9,7 +9,6 @@
  * persistence layer. MemoryDB is an acceleration index built alongside them.
  */
 
-import { DatabaseSync } from "node:sqlite";
 import { join } from "node:path";
 
 export interface Fact {
@@ -34,9 +33,13 @@ export interface StoredSummary {
 }
 
 export class MemoryDB {
-  private db: InstanceType<typeof DatabaseSync>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private db: any;
 
   constructor(bookDir: string) {
+    // Dynamic import to avoid crashing on Node 20 (node:sqlite requires Node 22+)
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { DatabaseSync } = require("node:sqlite");
     const dbPath = join(bookDir, "story", "memory.db");
     this.db = new DatabaseSync(dbPath);
     this.db.exec("PRAGMA journal_mode = WAL");
