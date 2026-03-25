@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Narcooo/novelsmith"
+    "url": "https://github.com/Blues-Code/novelsmith"
   },
   "scripts": {
     "build": "pnpm -r build",
