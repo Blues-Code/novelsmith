@@ -517,9 +517,10 @@ async function chatCompletionOpenAIResponses(
   onStreamProgress?: OnStreamProgress,
 ): Promise<LLMResponse> {
   const input: OpenAI.Responses.ResponseInputItem[] = messages.map((m) => ({
+    type: "message" as const,
     role: m.role as "system" | "user" | "assistant",
     content: m.content,
-  }));
+  } as any));
 
   const tools: OpenAI.Responses.Tool[] | undefined = webSearch
     ? [{ type: "web_search_preview" as const }]
@@ -582,9 +583,10 @@ async function chatCompletionOpenAIResponsesSync(
   _webSearch?: boolean,
 ): Promise<LLMResponse> {
   const input: OpenAI.Responses.ResponseInputItem[] = messages.map((m) => ({
+    type: "message" as const,
     role: m.role as "system" | "user" | "assistant",
     content: m.content,
-  }));
+  } as any));
 
   const response = await client.responses.create({
     model,
@@ -664,16 +666,16 @@ function agentMessagesToResponsesInput(
 
   for (const msg of messages) {
     if (msg.role === "system") {
-      result.push({ role: "system", content: msg.content });
+      result.push({ type: "message" as const, role: "system", content: msg.content } as any);
       continue;
     }
     if (msg.role === "user") {
-      result.push({ role: "user", content: msg.content });
+      result.push({ type: "message" as const, role: "user", content: msg.content } as any);
       continue;
     }
     if (msg.role === "assistant") {
       if (msg.content) {
-        result.push({ role: "assistant", content: msg.content });
+        result.push({ type: "message" as const, role: "assistant", content: msg.content } as any);
       }
       if (msg.toolCalls) {
         for (const tc of msg.toolCalls) {
