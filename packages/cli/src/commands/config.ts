@@ -277,3 +277,56 @@ configCommand
       process.exit(1);
     }
   });
+
+
+configCommand
+  .command("openclaw")
+  .description("Auto-configure from OpenClaw platform (reads ~/.openclaw/openclaw.json)")
+  .action(async () => {
+    const { existsSync } = await import("node:fs");
+    const { readFile, writeFile } = await import("node:fs/promises");
+    const { join } = await import("node:path");
+    const { homedir } = await import("node:os");
+
+    const configPath = join(homedir(), ".openclaw", "openclaw.json");
+    if (!existsSync(configPath)) {
+      logError("OpenClaw config not found: " + configPath);
+      logError("Make sure OpenClaw is installed and configured.");
+      process.exit(1);
+    }
+
+    try {
+      const config = JSON.parse(await readFile(configPath, "utf-8"));
+      const port = config.gateway?.port ?? 18789;
+      const token = config.gateway?.auth?.token;
+      if (!token) {
+        logError("OpenClaw gateway auth token not found in config.");
+        process.exit(1);
+      }
+      const model = config.agents?.defaults?.model?.primary ?? "bailian/qwen3.5-plus";
+
+      const root = findProjectRoot();
+      const lines = [
+        "# Auto-generated from OpenClaw config",
+        "# Regenerate: novelsmith config openclaw",
+        "NOVELSMITH_LLM_PROVIDER=custom",
+        "NOVELSMITH_LLM_BASE_URL=http://localhost:" + port + "/v1",
+        "NOVELSMITH_LLM_API_KEY=" + token,
+        "NOVELSMITH_LLM_MODEL=" + model,
+        "NOVELSMITH_LLM_API_FORMAT=responses",
+        "NOVELSMITH_LLM_STREAM=false",
+        ""
+      ];
+      const envPath = join(root, ".env");
+      await writeFile(envPath, lines.join("\n"));
+
+      log("OpenClaw configuration applied:");
+      log("  Gateway: http://localhost:" + port + "/v1");
+      log("  Model:   " + model);
+      log("  Format:  responses");
+      log("  .env written to: " + envPath);
+    } catch (e) {
+      logError("Failed to read OpenClaw config: " + e);
+      process.exit(1);
+    }
+  });

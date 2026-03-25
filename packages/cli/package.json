@@ -1,6 +1,6 @@
 {
   "name": "@mrweijh/novelsmith",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "novelsmith CLI — multi-agent novel production system",
   "type": "module",
   "bin": {

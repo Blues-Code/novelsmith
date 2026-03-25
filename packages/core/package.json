@@ -1,6 +1,6 @@
 {
   "name": "@mrweijh/novelsmith-core",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "novelsmith core: models, agents, pipeline, LLM integration",
   "type": "module",
   "main": "dist/index.js",
