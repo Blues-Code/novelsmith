@@ -167,10 +167,10 @@ function wrapLLMError(error: unknown, context?: { readonly baseUrl?: string; rea
   if (msg.includes("400")) {
     return new Error(
       `API 返回 400 (请求参数错误)。可能原因：\n` +
-      `  1. 模型名称不正确（检查 INKOS_LLM_MODEL）\n` +
+      `  1. 模型名称不正确（检查 NOVELSMITH_LLM_MODEL）\n` +
       `  2. 提供方不支持某些参数（如 max_tokens、stream）\n` +
       `  3. 消息格式不兼容（部分提供方不支持 system role）\n` +
-      `  建议：在 inkos.json 中设置 "stream": false 试试，或检查提供方文档${ctxLine}`,
+      `  建议：在 novelsmith.json 中设置 "stream": false 试试，或检查提供方文档${ctxLine}`,
     );
   }
   if (msg.includes("403")) {
@@ -179,12 +179,12 @@ function wrapLLMError(error: unknown, context?: { readonly baseUrl?: string; rea
       `  1. API Key 无效或过期\n` +
       `  2. API 提供方的内容审查拦截了请求（公益/免费 API 常见）\n` +
       `  3. 账户余额不足\n` +
-      `  建议：用 inkos doctor 测试 API 连通性，或换一个不限制内容的 API 提供方${ctxLine}`,
+      `  建议：用 novelsmith doctor 测试 API 连通性，或换一个不限制内容的 API 提供方${ctxLine}`,
     );
   }
   if (msg.includes("401")) {
     return new Error(
-      `API 返回 401 (未授权)。请检查 .env 中的 INKOS_LLM_API_KEY 是否正确。${ctxLine}`,
+      `API 返回 401 (未授权)。请检查 .env 中的 NOVELSMITH_LLM_API_KEY 是否正确。${ctxLine}`,
     );
   }
   if (msg.includes("429")) {
@@ -198,7 +198,7 @@ function wrapLLMError(error: unknown, context?: { readonly baseUrl?: string; rea
       `  1. baseUrl 地址不正确（当前：${context?.baseUrl ?? "未知"}）\n` +
       `  2. 网络不通或被防火墙拦截\n` +
       `  3. API 服务暂时不可用\n` +
-      `  建议：检查 INKOS_LLM_BASE_URL 是否包含完整路径（如 /v1）`,
+      `  建议：检查 NOVELSMITH_LLM_BASE_URL 是否包含完整路径（如 /v1）`,
     );
   }
   return error instanceof Error ? error : new Error(msg);

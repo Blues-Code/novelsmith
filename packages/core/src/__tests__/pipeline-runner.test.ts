@@ -90,7 +90,7 @@ async function createRunnerFixture(): Promise<{
   state: StateManager;
   bookId: string;
 }> {
-  const root = await mkdtemp(join(tmpdir(), "inkos-runner-test-"));
+  const root = await mkdtemp(join(tmpdir(), "novelsmith-runner-test-"));
   const state = new StateManager(root);
   const bookId = "test-book";
   const now = "2026-03-19T00:00:00.000Z";

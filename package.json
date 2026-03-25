@@ -1,12 +1,12 @@
 {
-  "name": "inkos",
+  "name": "novelsmith",
   "version": "0.5.1",
   "private": true,
   "description": "Multi-agent novel production system",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Narcooo/inkos"
+    "url": "https://github.com/Narcooo/novelsmith"
   },
   "scripts": {
     "build": "pnpm -r build",

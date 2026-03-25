@@ -1,10 +1,10 @@
 {
-  "name": "@actalk/inkos",
+  "name": "@mrweijh/novelsmith",
   "version": "0.5.1",
-  "description": "InkOS CLI — multi-agent novel production system",
+  "description": "novelsmith CLI — multi-agent novel production system",
   "type": "module",
   "bin": {
-    "inkos": "dist/index.js"
+    "novelsmith": "dist/index.js"
   },
   "files": [
     "dist",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Narcooo/inkos.git",
+    "url": "https://github.com/Narcooo/novelsmith.git",
     "directory": "packages/cli"
   },
   "scripts": {
@@ -26,7 +26,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@actalk/inkos-core": "workspace:*",
+    "@mrweijh/novelsmith-core": "workspace:*",
     "commander": "^13.0.0",
     "dotenv": "^16.4.0",
     "epub-gen-memory": "^1.0.10",

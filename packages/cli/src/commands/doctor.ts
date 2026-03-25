@@ -18,12 +18,12 @@ export const doctorCommand = new Command("doctor")
       detail: nodeVersion,
     });
 
-    // 2. Check inkos.json exists
+    // 2. Check novelsmith.json exists
     try {
-      await readFile(join(root, "inkos.json"), "utf-8");
-      checks.push({ name: "inkos.json", ok: true, detail: "Found" });
+      await readFile(join(root, "novelsmith.json"), "utf-8");
+      checks.push({ name: "novelsmith.json", ok: true, detail: "Found" });
     } catch {
-      checks.push({ name: "inkos.json", ok: false, detail: "Not found. Run 'inkos init'" });
+      checks.push({ name: "novelsmith.json", ok: false, detail: "Not found. Run 'novelsmith init'" });
     }
 
     // 3. Check .env exists
@@ -39,12 +39,12 @@ export const doctorCommand = new Command("doctor")
       let hasGlobal = false;
       try {
         const globalContent = await readFile(GLOBAL_ENV_PATH, "utf-8");
-        hasGlobal = globalContent.includes("INKOS_LLM_API_KEY=") && !globalContent.includes("your-api-key-here");
+        hasGlobal = globalContent.includes("NOVELSMITH_LLM_API_KEY=") && !globalContent.includes("your-api-key-here");
       } catch { /* no global config */ }
       checks.push({
         name: "Global Config",
         ok: hasGlobal,
-        detail: hasGlobal ? `Found (${GLOBAL_ENV_PATH})` : "Not set. Run 'inkos config set-global'",
+        detail: hasGlobal ? `Found (${GLOBAL_ENV_PATH})` : "Not set. Run 'novelsmith config set-global'",
       });
     }
 
@@ -53,18 +53,18 @@ export const doctorCommand = new Command("doctor")
       const { config: loadDotenv } = await import("dotenv");
       loadDotenv({ path: GLOBAL_ENV_PATH });
       loadDotenv({ path: join(root, ".env"), override: true });
-      const apiKey = process.env.INKOS_LLM_API_KEY;
+      const apiKey = process.env.NOVELSMITH_LLM_API_KEY;
       const hasKey = !!apiKey && apiKey.length > 10 && apiKey !== "your-api-key-here";
       checks.push({
         name: "LLM API Key",
         ok: hasKey,
-        detail: hasKey ? "Configured" : "Missing — run 'inkos config set-global' or add to project .env",
+        detail: hasKey ? "Configured" : "Missing — run 'novelsmith config set-global' or add to project .env",
       });
     }
 
     // 5. Check books directory
     try {
-      const { StateManager } = await import("@actalk/inkos-core");
+      const { StateManager } = await import("@mrweijh/novelsmith-core");
       const state = new StateManager(root);
       const books = await state.listBooks();
       checks.push({
@@ -78,7 +78,7 @@ export const doctorCommand = new Command("doctor")
 
     // 6. API connectivity test
     try {
-      const { createLLMClient, chatCompletion, LLMConfigSchema } = await import("@actalk/inkos-core");
+      const { createLLMClient, chatCompletion, LLMConfigSchema } = await import("@mrweijh/novelsmith-core");
       const { loadConfig } = await import("../utils.js");
 
       let llmConfig;
@@ -90,12 +90,12 @@ export const doctorCommand = new Command("doctor")
         const { config: loadDotenv } = await import("dotenv");
         loadDotenv({ path: GLOBAL_ENV_PATH });
         const env = process.env;
-        if (env.INKOS_LLM_API_KEY && env.INKOS_LLM_BASE_URL && env.INKOS_LLM_MODEL) {
+        if (env.NOVELSMITH_LLM_API_KEY && env.NOVELSMITH_LLM_BASE_URL && env.NOVELSMITH_LLM_MODEL) {
           llmConfig = LLMConfigSchema.parse({
-            provider: env.INKOS_LLM_PROVIDER ?? "custom",
-            baseUrl: env.INKOS_LLM_BASE_URL,
-            apiKey: env.INKOS_LLM_API_KEY,
-            model: env.INKOS_LLM_MODEL,
+            provider: env.NOVELSMITH_LLM_PROVIDER ?? "custom",
+            baseUrl: env.NOVELSMITH_LLM_BASE_URL,
+            apiKey: env.NOVELSMITH_LLM_API_KEY,
+            model: env.NOVELSMITH_LLM_MODEL,
           });
         }
       }
@@ -130,14 +130,14 @@ export const doctorCommand = new Command("doctor")
       const hints: string[] = [];
 
       if (errMsg.includes("Connection error") || errMsg.includes("ECONNREFUSED") || errMsg.includes("fetch failed")) {
-        hints.push("baseUrl 可能不正确，检查 INKOS_LLM_BASE_URL 是否包含完整路径（如 /v1）");
+        hints.push("baseUrl 可能不正确，检查 NOVELSMITH_LLM_BASE_URL 是否包含完整路径（如 /v1）");
       }
       if (errMsg.includes("400")) {
-        hints.push("尝试在 inkos.json 中设置 \"stream\": false");
-        hints.push("检查模型名称是否正确（INKOS_LLM_MODEL）");
+        hints.push("尝试在 novelsmith.json 中设置 \"stream\": false");
+        hints.push("检查模型名称是否正确（NOVELSMITH_LLM_MODEL）");
       }
       if (errMsg.includes("401")) {
-        hints.push("API Key 无效，检查 INKOS_LLM_API_KEY");
+        hints.push("API Key 无效，检查 NOVELSMITH_LLM_API_KEY");
       }
 
       checks.push({
@@ -154,7 +154,7 @@ export const doctorCommand = new Command("doctor")
     }
 
     // Output
-    log("\nInkOS Doctor\n");
+    log("\nnovelsmith Doctor\n");
     for (const check of checks) {
       const icon = check.ok ? "[OK]" : "[!!]";
       log(`  ${icon} ${check.name}: ${check.detail}`);

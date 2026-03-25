@@ -10,7 +10,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@actalk/inkos-core':
+      '@mrweijh/novelsmith-core':
         specifier: workspace:*
         version: link:../core
       commander:

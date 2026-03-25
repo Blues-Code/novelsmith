@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { access } from "node:fs/promises";
 
 export const studioCommand = new Command("studio")
-  .description("Start InkOS Studio web workbench")
+  .description("Start novelsmith Studio web workbench")
   .option("-p, --port <port>", "Server port", "4567")
   .action(async (opts) => {
     const root = findProjectRoot();
@@ -13,7 +13,7 @@ export const studioCommand = new Command("studio")
 
     // Look for studio's built server entry
     const studioPaths = [
-      join(root, "node_modules", "@actalk", "inkos-studio", "dist", "api", "index.js"),
+      join(root, "node_modules", "@mrweijh", "novelsmith-studio", "dist", "api", "index.js"),
       join(root, "..", "studio", "src", "api", "index.ts"),
     ];
 
@@ -40,14 +40,14 @@ export const studioCommand = new Command("studio")
 
     if (!studioEntry) {
       logError(
-        "InkOS Studio not found. If you cloned the repo, run:\n" +
+        "novelsmith Studio not found. If you cloned the repo, run:\n" +
         "  cd packages/studio && pnpm install && pnpm build\n" +
-        "Then run 'inkos studio' from the project root.",
+        "Then run 'novelsmith studio' from the project root.",
       );
       process.exit(1);
     }
 
-    log(`Starting InkOS Studio on http://localhost:${port}`);
+    log(`Starting novelsmith Studio on http://localhost:${port}`);
 
     const launch = studioEntry.endsWith(".ts")
       ? { command: "npx", args: ["tsx", studioEntry] }
@@ -56,7 +56,7 @@ export const studioCommand = new Command("studio")
     const child = spawn(launch.command, launch.args, {
       cwd: root,
       stdio: "inherit",
-      env: { ...process.env, INKOS_STUDIO_PORT: port },
+      env: { ...process.env, NOVELSMITH_STUDIO_PORT: port },
     });
 
     child.on("error", (e) => {

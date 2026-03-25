@@ -20,7 +20,7 @@ vi.mock("node:fs", () => ({
   createWriteStream: createWriteStreamMock,
 }));
 
-vi.mock("@actalk/inkos-core", () => ({
+vi.mock("@mrweijh/novelsmith-core", () => ({
   Scheduler: class {
     start = schedulerStartMock;
     stop = schedulerStopMock;
@@ -83,8 +83,8 @@ describe("daemon command", () => {
       upCommand.parseAsync(["node", "up", "--quiet"]),
     ).rejects.toMatchObject({ code: 1 });
 
-    expect(writeFileMock).toHaveBeenCalledWith("/project/inkos.pid", expect.any(String), "utf-8");
-    expect(unlinkMock).toHaveBeenCalledWith("/project/inkos.pid");
+    expect(writeFileMock).toHaveBeenCalledWith("/project/novelsmith.pid", expect.any(String), "utf-8");
+    expect(unlinkMock).toHaveBeenCalledWith("/project/novelsmith.pid");
 
     exitSpy.mockRestore();
   });

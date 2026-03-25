@@ -1,17 +1,17 @@
 ---
-name: inkos
+name: novelsmith
 description: Autonomous novel writing CLI agent - use for creative fiction writing, novel generation, style imitation, chapter continuation/import, EPUB export, AIGC detection, and fan fiction. Native English support with 10 built-in English genre profiles (LitRPG, Progression Fantasy, Isekai, Cultivation, System Apocalypse, Dungeon Core, Romantasy, Sci-Fi, Tower Climber, Cozy Fantasy). Also supports Chinese web novel genres (xuanhuan, xianxia, urban, horror, other). Multi-agent pipeline, two-phase writer (creative + settlement), 33-dimension auditing, token usage analytics, creative brief input, structured logging (JSON Lines), multi-model routing, and custom OpenAI-compatible provider support.
 version: 1.5.0
-metadata: { "openclaw": { "emoji": "📖", "requires": { "bins": ["inkos", "node"], "env": [] }, "primaryEnv": "", "homepage": "https://github.com/Narcooo/inkos", "install": [{ "id": "npm", "kind": "node", "package": "@actalk/inkos", "label": "Install InkOS (npm)" }] } }
+metadata: { "openclaw": { "emoji": "📖", "requires": { "bins": ["novelsmith", "node"], "env": [] }, "primaryEnv": "", "homepage": "https://github.com/Narcooo/novelsmith", "install": [{ "id": "npm", "kind": "node", "package": "@mrweijh/novelsmith", "label": "Install novelsmith (npm)" }] } }
 ---
 
-# InkOS - Autonomous Novel Writing Agent
+# novelsmith - Autonomous Novel Writing Agent
 
-InkOS is a CLI tool for autonomous fiction writing powered by LLM agents. It orchestrates a 5-agent pipeline (Radar → Architect → Writer → Auditor → Reviser) to generate, audit, and revise novel content with style consistency and quality control.
+novelsmith is a CLI tool for autonomous fiction writing powered by LLM agents. It orchestrates a 5-agent pipeline (Radar → Architect → Writer → Auditor → Reviser) to generate, audit, and revise novel content with style consistency and quality control.
 
 The Writer uses a two-phase architecture: Phase 1 (creative writing, temp 0.7) produces the chapter text, then Phase 2 (state settlement, temp 0.3) updates all truth files for long-term consistency.
 
-## When to Use InkOS
+## When to Use novelsmith
 
 - **English novel writing**: Native English support with 10 genre profiles (LitRPG, Progression Fantasy, Isekai, etc.). Set `--lang en`
 - **Chinese web novel writing**: 5 built-in Chinese genres (xuanhuan, xianxia, urban, horror, other)
@@ -29,30 +29,30 @@ The Writer uses a two-phase architecture: Phase 1 (creative writing, temp 0.7) p
 ### First Time Setup
 ```bash
 # Initialize a project directory (creates config structure)
-inkos init my-writing-project
+novelsmith init my-writing-project
 
 # Configure your LLM provider (OpenAI, Anthropic, or any OpenAI-compatible API)
-inkos config set-global --provider openai --base-url https://api.openai.com/v1 --api-key sk-xxx --model gpt-4o
+novelsmith config set-global --provider openai --base-url https://api.openai.com/v1 --api-key sk-xxx --model gpt-4o
 # For compatible/proxy endpoints, use --provider custom:
-# inkos config set-global --provider custom --base-url https://your-proxy.com/v1 --api-key sk-xxx --model gpt-4o
+# novelsmith config set-global --provider custom --base-url https://your-proxy.com/v1 --api-key sk-xxx --model gpt-4o
 ```
 
 ### Multi-Model Routing (Optional)
 ```bash
 # Assign different models to different agents — balance quality and cost
-inkos config set-model writer claude-sonnet-4-20250514 --provider anthropic --base-url https://api.anthropic.com --api-key-env ANTHROPIC_API_KEY
-inkos config set-model auditor gpt-4o --provider openai
-inkos config show-models
+novelsmith config set-model writer claude-sonnet-4-20250514 --provider anthropic --base-url https://api.anthropic.com --api-key-env ANTHROPIC_API_KEY
+novelsmith config set-model auditor gpt-4o --provider openai
+novelsmith config show-models
 ```
 Agents without explicit overrides fall back to the global model.
 
 ### View System Status
 ```bash
 # Check installation and configuration
-inkos doctor
+novelsmith doctor
 
 # View current config
-inkos status
+novelsmith status
 ```
 
 ## Common Workflows
@@ -61,16 +61,16 @@ inkos status
 
 1. **Initialize and create book**:
    ```bash
-   inkos book create --title "My Novel Title" --genre xuanhuan --chapter-words 3000
+   novelsmith book create --title "My Novel Title" --genre xuanhuan --chapter-words 3000
    # Or with a creative brief (your worldbuilding doc / ideas):
-   inkos book create --title "My Novel Title" --genre xuanhuan --chapter-words 3000 --brief my-ideas.md
+   novelsmith book create --title "My Novel Title" --genre xuanhuan --chapter-words 3000 --brief my-ideas.md
    ```
    - Genres: `xuanhuan` (cultivation), `xianxia` (immortal), `urban` (city), `horror`, `other`
    - Returns a `book-id` for all subsequent operations
 
 2. **Generate initial chapters** (e.g., 5 chapters):
    ```bash
-   inkos write next book-id --count 5 --words 3000 --context "young protagonist discovering powers"
+   novelsmith write next book-id --count 5 --words 3000 --context "young protagonist discovering powers"
    ```
    - The `write next` command runs the full pipeline: draft → audit → revise
    - `--context` provides guidance to the Architect and Writer agents
@@ -78,62 +78,62 @@ inkos status
 
 3. **Review and approve chapters**:
    ```bash
-   inkos review list book-id
-   inkos review approve-all book-id
+   novelsmith review list book-id
+   novelsmith review approve-all book-id
    ```
 
 4. **Export the book** (supports txt, md, epub):
    ```bash
-   inkos export book-id
-   inkos export book-id --format epub
+   novelsmith export book-id
+   novelsmith export book-id --format epub
    ```
 
 ### Workflow 2: Continue Writing Existing Novel
 
 1. **List your books**:
    ```bash
-   inkos book list
+   novelsmith book list
    ```
 
 2. **Continue from last chapter**:
    ```bash
-   inkos write next book-id --count 3 --words 2500 --context "protagonist faces critical choice"
+   novelsmith write next book-id --count 3 --words 2500 --context "protagonist faces critical choice"
    ```
-   - InkOS maintains 7 truth files (world state, character matrix, emotional arcs, etc.) for consistency
+   - novelsmith maintains 7 truth files (world state, character matrix, emotional arcs, etc.) for consistency
    - If only one book exists, omit `book-id` for auto-detection
 
 3. **Review and approve**:
    ```bash
-   inkos review approve-all
+   novelsmith review approve-all
    ```
 
 ### Workflow 3: Import Existing Chapters & Continue
 
-Use this when you have an existing novel (or partial novel) and want InkOS to pick up where it left off.
+Use this when you have an existing novel (or partial novel) and want novelsmith to pick up where it left off.
 
 1. **Import from a single text file** (auto-splits by chapter headings):
    ```bash
-   inkos import chapters book-id --from novel.txt
+   novelsmith import chapters book-id --from novel.txt
    ```
    - Automatically splits by `第X章` pattern
    - Custom split pattern: `--split "Chapter\\s+\\d+"`
 
 2. **Import from a directory** of separate chapter files:
    ```bash
-   inkos import chapters book-id --from ./chapters/
+   novelsmith import chapters book-id --from ./chapters/
    ```
    - Reads `.md` and `.txt` files in sorted order
 
 3. **Resume interrupted import**:
    ```bash
-   inkos import chapters book-id --from novel.txt --resume-from 15
+   novelsmith import chapters book-id --from novel.txt --resume-from 15
    ```
 
 4. **Continue writing** from the imported chapters:
    ```bash
-   inkos write next book-id --count 3
+   novelsmith write next book-id --count 3
    ```
-   - InkOS reverse-engineers all 7 truth files from the imported chapters
+   - novelsmith reverse-engineers all 7 truth files from the imported chapters
    - Generates a style guide from the existing text
    - New chapters maintain consistency with imported content
 
@@ -141,13 +141,13 @@ Use this when you have an existing novel (or partial novel) and want InkOS to pi
 
 1. **Analyze reference text**:
    ```bash
-   inkos style analyze reference_text.txt
+   novelsmith style analyze reference_text.txt
    ```
    - Examines vocabulary, sentence structure, tone, pacing
 
 2. **Import style to your book**:
    ```bash
-   inkos style import reference_text.txt book-id --name "Author Name"
+   novelsmith style import reference_text.txt book-id --name "Author Name"
    ```
    - All future chapters adopt this style profile
    - Style rules become part of the Reviser's audit criteria
@@ -156,14 +156,14 @@ Use this when you have an existing novel (or partial novel) and want InkOS to pi
 
 1. **Import parent canon**:
    ```bash
-   inkos import canon spinoff-book-id --from parent-book-id
+   novelsmith import canon spinoff-book-id --from parent-book-id
    ```
    - Creates links to parent book's world state, characters, and events
    - Reviser enforces canon consistency
 
 2. **Continue spinoff**:
    ```bash
-   inkos write next spinoff-book-id --count 3 --context "alternate timeline after Chapter 20"
+   novelsmith write next spinoff-book-id --count 3 --context "alternate timeline after Chapter 20"
    ```
 
 ### Workflow 6: Fine-Grained Control (Draft → Audit → Revise)
@@ -172,25 +172,25 @@ If you need separate control over each pipeline stage:
 
 1. **Generate draft only**:
    ```bash
-   inkos draft book-id --words 3000 --context "protagonist escapes" --json
+   novelsmith draft book-id --words 3000 --context "protagonist escapes" --json
    ```
 
 2. **Audit the chapter** (33-dimension quality check):
    ```bash
-   inkos audit book-id chapter-1 --json
+   novelsmith audit book-id chapter-1 --json
    ```
    - Returns metrics across 33 dimensions including pacing, dialogue, world-building, outline adherence, and more
 
 3. **Revise with specific mode**:
    ```bash
-   inkos revise book-id chapter-1 --mode polish --json
+   novelsmith revise book-id chapter-1 --mode polish --json
    ```
    - Modes: `polish` (minor), `spot-fix` (targeted), `rewrite` (major), `rework` (structure), `anti-detect` (reduce AI traces)
 
 ### Workflow 7: Monitor Platform Trends
 
 ```bash
-inkos radar scan
+novelsmith radar scan
 ```
 - Analyzes trending genres, tropes, and reader preferences
 - Informs Architect recommendations for new books
@@ -199,10 +199,10 @@ inkos radar scan
 
 ```bash
 # Detect AIGC in a specific chapter
-inkos detect book-id
+novelsmith detect book-id
 
 # Deep scan all chapters
-inkos detect book-id --all
+novelsmith detect book-id --all
 ```
 - Uses 11 deterministic rules (zero LLM cost) + optional LLM validation
 - Returns detection confidence and problematic passages
@@ -210,9 +210,9 @@ inkos detect book-id --all
 ### Workflow 9: View Analytics
 
 ```bash
-inkos analytics book-id --json
+novelsmith analytics book-id --json
 # Shorthand alias
-inkos stats book-id --json
+novelsmith stats book-id --json
 ```
 - Total chapters, word count, average words per chapter
 - Audit pass rate and top issue categories
@@ -223,26 +223,26 @@ inkos stats book-id --json
 
 ```bash
 # Create an English LitRPG novel (language auto-detected from genre)
-inkos book create --title "The Last Delver" --genre litrpg --chapter-words 3000
+novelsmith book create --title "The Last Delver" --genre litrpg --chapter-words 3000
 
 # Or set language explicitly
-inkos book create --title "My Novel" --genre other --lang en
+novelsmith book create --title "My Novel" --genre other --lang en
 
 # Set English as default for all projects
-inkos config set-global --lang en
+novelsmith config set-global --lang en
 ```
 - 10 English genres: litrpg, progression, isekai, cultivation, system-apocalypse, dungeon-core, romantasy, sci-fi, tower-climber, cozy
 - Each genre has dedicated pacing rules, fatigue word lists (e.g., "delve", "tapestry", "testament"), and audit dimensions
-- Use `inkos genre list` to see all available genres
+- Use `novelsmith genre list` to see all available genres
 
 ### Workflow 11: Fan Fiction
 
 ```bash
 # Create a fanfic from source material
-inkos fanfic init --title "My Fanfic" --from source-novel.txt --mode canon
+novelsmith fanfic init --title "My Fanfic" --from source-novel.txt --mode canon
 
 # Modes: canon (faithful), au (alternate universe), ooc (out of character), cp (ship-focused)
-inkos fanfic init --title "What If" --from source.txt --mode au --genre other
+novelsmith fanfic init --title "What If" --from source.txt --mode au --genre other
 ```
 - Imports and analyzes source material automatically
 - Fanfic-specific audit dimensions and information boundary controls
@@ -253,7 +253,7 @@ inkos fanfic init --title "What If" --from source.txt --mode au --genre other
 For flexible, conversational requests:
 
 ```bash
-inkos agent "写一部都市题材的小说，主角是一个年轻律师，第一章三千字"
+novelsmith agent "写一部都市题材的小说，主角是一个年轻律师，第一章三千字"
 ```
 - Agent interprets natural language and invokes appropriate commands
 - Useful for complex multi-step requests
@@ -264,20 +264,20 @@ inkos agent "写一部都市题材的小说，主角是一个年轻律师，第�
 If your project contains only one book, most commands accept `book-id` as optional. You can omit it for brevity:
 ```bash
 # Explicit
-inkos write next book-123 --count 1
+novelsmith write next book-123 --count 1
 
 # Auto-detected (if only one book exists)
-inkos write next --count 1
+novelsmith write next --count 1
 ```
 
 ### --json Flag
 All content-generating commands support `--json` for structured output. Essential for programmatic use:
 ```bash
-inkos draft book-id --words 3000 --context "guidance" --json
+novelsmith draft book-id --words 3000 --context "guidance" --json
 ```
 
 ### Truth Files (Long-Term Memory)
-InkOS maintains 7 files per book for coherence:
+novelsmith maintains 7 files per book for coherence:
 - **World State**: Maps, locations, technology levels, magic systems
 - **Character Matrix**: Names, relationships, arcs, motivations
 - **Resource Ledger**: In-world items, money, power levels
@@ -298,7 +298,7 @@ This separation allows creative freedom in writing while maintaining rigorous co
 ### Context Guidance
 The `--context` parameter provides directional hints to the Writer and Architect:
 ```bash
-inkos write next book-id --count 2 --context "protagonist discovers betrayal, must decide whether to trust mentor"
+novelsmith write next book-id --count 2 --context "protagonist discovers betrayal, must decide whether to trust mentor"
 ```
 - Context is optional but highly recommended for narrative coherence
 - Supports both English and Chinese
@@ -307,61 +307,61 @@ inkos write next book-id --count 2 --context "protagonist discovers betrayal, mu
 
 ### View Built-In Genres
 ```bash
-inkos genre list
-inkos genre show xuanhuan
+novelsmith genre list
+novelsmith genre show xuanhuan
 ```
 
 ### Create Custom Genre
 ```bash
-inkos genre create --name "my-genre" --rules "rule1,rule2,rule3"
+novelsmith genre create --name "my-genre" --rules "rule1,rule2,rule3"
 ```
 
 ### Copy and Modify Existing Genre
 ```bash
-inkos genre copy xuanhuan --name "dark-xuanhuan" --rules "darker tone, more violence"
+novelsmith genre copy xuanhuan --name "dark-xuanhuan" --rules "darker tone, more violence"
 ```
 
 ## Command Reference Summary
 
 | Command | Purpose | Notes |
 |---------|---------|-------|
-| `inkos init [name]` | Initialize project | One-time setup |
-| `inkos book create` | Create new book | Returns book-id. `--brief <file>`, `--lang en/zh`, `--genre litrpg/progression/...` |
-| `inkos book list` | List all books | Shows IDs, statuses |
-| `inkos write next` | Full pipeline (draft→audit→revise) | Primary workflow command |
-| `inkos draft` | Generate draft only | No auditing/revision |
-| `inkos audit` | 33-dimension quality check | Standalone evaluation |
-| `inkos revise` | Revise chapter | Modes: polish/spot-fix/rewrite/rework/anti-detect |
-| `inkos agent` | Natural language interface | Flexible requests |
-| `inkos style analyze` | Analyze reference text | Extracts style profile |
-| `inkos style import` | Apply style to book | Makes style permanent |
-| `inkos import canon` | Link spinoff to parent | For prequels/sequels |
-| `inkos import chapters` | Import existing chapters | Reverse-engineers truth files for continuation |
-| `inkos detect` | AIGC detection | Flags AI-generated passages |
-| `inkos export` | Export finished book | Formats: txt, md, epub |
-| `inkos analytics` / `inkos stats` | View book statistics | Word count, audit rates, token usage |
-| `inkos radar scan` | Platform trend analysis | Informs new book ideas |
-| `inkos config set-global` | Configure LLM provider | OpenAI/Anthropic/custom (any OpenAI-compatible) |
-| `inkos config set-model <agent> <model>` | Set model override for a specific agent | `--provider`, `--base-url`, `--api-key-env` for multi-provider routing |
-| `inkos config show-models` | Show current model routing | View per-agent model assignments |
-| `inkos doctor` | Diagnose issues | Check installation |
-| `inkos update` | Update to latest version | Self-update |
-| `inkos up/down` | Daemon mode | Background processing. Logs to `inkos.log` (JSON Lines). `-q` for quiet mode |
-| `inkos review list/approve-all` | Manage chapter approvals | Quality gate |
-| `inkos fanfic init` | Create fanfic from source material | `--from <file>`, `--mode canon/au/ooc/cp` |
-| `inkos genre list` | List all available genres | Shows English and Chinese genres with default language |
+| `novelsmith init [name]` | Initialize project | One-time setup |
+| `novelsmith book create` | Create new book | Returns book-id. `--brief <file>`, `--lang en/zh`, `--genre litrpg/progression/...` |
+| `novelsmith book list` | List all books | Shows IDs, statuses |
+| `novelsmith write next` | Full pipeline (draft→audit→revise) | Primary workflow command |
+| `novelsmith draft` | Generate draft only | No auditing/revision |
+| `novelsmith audit` | 33-dimension quality check | Standalone evaluation |
+| `novelsmith revise` | Revise chapter | Modes: polish/spot-fix/rewrite/rework/anti-detect |
+| `novelsmith agent` | Natural language interface | Flexible requests |
+| `novelsmith style analyze` | Analyze reference text | Extracts style profile |
+| `novelsmith style import` | Apply style to book | Makes style permanent |
+| `novelsmith import canon` | Link spinoff to parent | For prequels/sequels |
+| `novelsmith import chapters` | Import existing chapters | Reverse-engineers truth files for continuation |
+| `novelsmith detect` | AIGC detection | Flags AI-generated passages |
+| `novelsmith export` | Export finished book | Formats: txt, md, epub |
+| `novelsmith analytics` / `novelsmith stats` | View book statistics | Word count, audit rates, token usage |
+| `novelsmith radar scan` | Platform trend analysis | Informs new book ideas |
+| `novelsmith config set-global` | Configure LLM provider | OpenAI/Anthropic/custom (any OpenAI-compatible) |
+| `novelsmith config set-model <agent> <model>` | Set model override for a specific agent | `--provider`, `--base-url`, `--api-key-env` for multi-provider routing |
+| `novelsmith config show-models` | Show current model routing | View per-agent model assignments |
+| `novelsmith doctor` | Diagnose issues | Check installation |
+| `novelsmith update` | Update to latest version | Self-update |
+| `novelsmith up/down` | Daemon mode | Background processing. Logs to `novelsmith.log` (JSON Lines). `-q` for quiet mode |
+| `novelsmith review list/approve-all` | Manage chapter approvals | Quality gate |
+| `novelsmith fanfic init` | Create fanfic from source material | `--from <file>`, `--mode canon/au/ooc/cp` |
+| `novelsmith genre list` | List all available genres | Shows English and Chinese genres with default language |
 
 ## Error Handling
 
 ### Common Issues
 
 **"book-id not found"**
-- Verify the ID with `inkos book list`
+- Verify the ID with `novelsmith book list`
 - Ensure you're in the correct project directory
 
 **"Provider not configured"**
-- Run `inkos config set-global` with valid credentials
-- Check API key and base URL with `inkos doctor`
+- Run `novelsmith config set-global` with valid credentials
+- Check API key and base URL with `novelsmith doctor`
 
 **"Context invalid"**
 - Ensure `--context` is a string (wrap in quotes if multi-word)
@@ -370,7 +370,7 @@ inkos genre copy xuanhuan --name "dark-xuanhuan" --rules "darker tone, more viol
 **"Audit failed"**
 - Check chapter for encoding issues
 - Ensure chapter-words matches actual word count
-- Try `inkos revise` with `--mode rewrite`
+- Try `novelsmith revise` with `--mode rewrite`
 
 **"Book already has chapters" (import)**
 - Use `--resume-from <n>` to append to existing chapters
@@ -381,10 +381,10 @@ inkos genre copy xuanhuan --name "dark-xuanhuan" --rules "darker tone, more viol
 For long-running operations:
 ```bash
 # Start background daemon
-inkos up
+novelsmith up
 
 # Stop daemon
-inkos down
+novelsmith down
 
 # Daemon auto-processes queued chapters
 ```
@@ -392,18 +392,18 @@ inkos down
 ## Tips for Best Results
 
 1. **Provide rich context**: The more guidance in `--context`, the more coherent the narrative
-2. **Start with style**: If imitating an author, run `inkos style import` before generation
-3. **Import first**: For existing novels, use `inkos import chapters` to bootstrap truth files before continuing
-4. **Review regularly**: Use `inkos review` to catch issues early
-5. **Monitor audits**: Check `inkos audit` metrics to understand quality bottlenecks
+2. **Start with style**: If imitating an author, run `novelsmith style import` before generation
+3. **Import first**: For existing novels, use `novelsmith import chapters` to bootstrap truth files before continuing
+4. **Review regularly**: Use `novelsmith review` to catch issues early
+5. **Monitor audits**: Check `novelsmith audit` metrics to understand quality bottlenecks
 6. **Use spinoffs strategically**: Import canon before writing prequels/sequels
 7. **Batch generation**: Generate multiple chapters together (better continuity)
-8. **Check analytics**: Use `inkos analytics` to track quality trends over time
-9. **Export frequently**: Keep backups with `inkos export`
+8. **Check analytics**: Use `novelsmith analytics` to track quality trends over time
+9. **Export frequently**: Keep backups with `novelsmith export`
 
 ## Support & Resources
 
-- **Homepage**: https://github.com/Narcooo/inkos
-- **Configuration**: Stored in project root after `inkos init`
-- **Truth files**: Located in `.inkos/` directory per book
-- **Logs**: Check output of `inkos doctor` for troubleshooting
+- **Homepage**: https://github.com/Narcooo/novelsmith
+- **Configuration**: Stored in project root after `novelsmith init`
+- **Truth files**: Located in `.novelsmith/` directory per book
+- **Logs**: Check output of `novelsmith doctor` for troubleshooting

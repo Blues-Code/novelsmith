@@ -3,26 +3,26 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { ProjectConfigSchema, type ProjectConfig } from "../models/project.js";
 
-export const GLOBAL_CONFIG_DIR = join(homedir(), ".inkos");
+export const GLOBAL_CONFIG_DIR = join(homedir(), ".novelsmith");
 export const GLOBAL_ENV_PATH = join(GLOBAL_CONFIG_DIR, ".env");
 
 /**
- * Load project config from inkos.json with .env overrides.
+ * Load project config from novelsmith.json with .env overrides.
  * Shared by CLI and Studio — single source of truth for config loading.
  */
 export async function loadProjectConfig(root: string): Promise<ProjectConfig> {
-  // Load global ~/.inkos/.env first, then project .env overrides
+  // Load global ~/.novelsmith/.env first, then project .env overrides
   const { config: loadEnv } = await import("dotenv");
   loadEnv({ path: GLOBAL_ENV_PATH });
   loadEnv({ path: join(root, ".env"), override: true });
 
-  const configPath = join(root, "inkos.json");
+  const configPath = join(root, "novelsmith.json");
 
   try {
     await access(configPath);
   } catch {
     throw new Error(
-      `inkos.json not found in ${root}.\nMake sure you are inside an InkOS project directory (cd into the project created by 'inkos init').`,
+      `novelsmith.json not found in ${root}.\nMake sure you are inside an novelsmith project directory (cd into the project created by 'novelsmith init').`,
     );
   }
 
@@ -32,23 +32,23 @@ export async function loadProjectConfig(root: string): Promise<ProjectConfig> {
   try {
     config = JSON.parse(raw);
   } catch {
-    throw new Error(`inkos.json in ${root} is not valid JSON. Check the file for syntax errors.`);
+    throw new Error(`novelsmith.json in ${root} is not valid JSON. Check the file for syntax errors.`);
   }
 
-  // .env overrides inkos.json for LLM settings
+  // .env overrides novelsmith.json for LLM settings
   const env = process.env;
   const llm = (config.llm ?? {}) as Record<string, unknown>;
-  if (env.INKOS_LLM_PROVIDER) llm.provider = env.INKOS_LLM_PROVIDER;
-  if (env.INKOS_LLM_BASE_URL) llm.baseUrl = env.INKOS_LLM_BASE_URL;
-  if (env.INKOS_LLM_MODEL) llm.model = env.INKOS_LLM_MODEL;
-  if (env.INKOS_LLM_TEMPERATURE) llm.temperature = parseFloat(env.INKOS_LLM_TEMPERATURE);
-  if (env.INKOS_LLM_MAX_TOKENS) llm.maxTokens = parseInt(env.INKOS_LLM_MAX_TOKENS, 10);
-  if (env.INKOS_LLM_THINKING_BUDGET) llm.thinkingBudget = parseInt(env.INKOS_LLM_THINKING_BUDGET, 10);
-  // Extra params from env: INKOS_LLM_EXTRA_<key>=<value>
+  if (env.NOVELSMITH_LLM_PROVIDER) llm.provider = env.NOVELSMITH_LLM_PROVIDER;
+  if (env.NOVELSMITH_LLM_BASE_URL) llm.baseUrl = env.NOVELSMITH_LLM_BASE_URL;
+  if (env.NOVELSMITH_LLM_MODEL) llm.model = env.NOVELSMITH_LLM_MODEL;
+  if (env.NOVELSMITH_LLM_TEMPERATURE) llm.temperature = parseFloat(env.NOVELSMITH_LLM_TEMPERATURE);
+  if (env.NOVELSMITH_LLM_MAX_TOKENS) llm.maxTokens = parseInt(env.NOVELSMITH_LLM_MAX_TOKENS, 10);
+  if (env.NOVELSMITH_LLM_THINKING_BUDGET) llm.thinkingBudget = parseInt(env.NOVELSMITH_LLM_THINKING_BUDGET, 10);
+  // Extra params from env: NOVELSMITH_LLM_EXTRA_<key>=<value>
   const extraFromEnv: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(env)) {
-    if (key.startsWith("INKOS_LLM_EXTRA_") && value) {
-      const paramName = key.slice("INKOS_LLM_EXTRA_".length);
+    if (key.startsWith("NOVELSMITH_LLM_EXTRA_") && value) {
+      const paramName = key.slice("NOVELSMITH_LLM_EXTRA_".length);
       // Auto-coerce: numbers, booleans, JSON objects
       if (/^\d+(\.\d+)?$/.test(value)) extraFromEnv[paramName] = parseFloat(value);
       else if (value === "true") extraFromEnv[paramName] = true;
@@ -62,17 +62,17 @@ export async function loadProjectConfig(root: string): Promise<ProjectConfig> {
   if (Object.keys(extraFromEnv).length > 0) {
     llm.extra = { ...(llm.extra as Record<string, unknown> ?? {}), ...extraFromEnv };
   }
-  if (env.INKOS_LLM_API_FORMAT) llm.apiFormat = env.INKOS_LLM_API_FORMAT;
+  if (env.NOVELSMITH_LLM_API_FORMAT) llm.apiFormat = env.NOVELSMITH_LLM_API_FORMAT;
   config.llm = llm;
 
   // Global language override
-  if (env.INKOS_DEFAULT_LANGUAGE) config.language = env.INKOS_DEFAULT_LANGUAGE;
+  if (env.NOVELSMITH_DEFAULT_LANGUAGE) config.language = env.NOVELSMITH_DEFAULT_LANGUAGE;
 
-  // API key ONLY from env — never stored in inkos.json
-  const apiKey = env.INKOS_LLM_API_KEY;
+  // API key ONLY from env — never stored in novelsmith.json
+  const apiKey = env.NOVELSMITH_LLM_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "INKOS_LLM_API_KEY not set. Run 'inkos config set-global' or add it to project .env file.",
+      "NOVELSMITH_LLM_API_KEY not set. Run 'novelsmith config set-global' or add it to project .env file.",
     );
   }
   llm.apiKey = apiKey;

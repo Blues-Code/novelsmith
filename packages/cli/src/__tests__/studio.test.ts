@@ -44,14 +44,14 @@ describe("studio command", () => {
       expect.objectContaining({
         cwd: "/project",
         stdio: "inherit",
-        env: expect.objectContaining({ INKOS_STUDIO_PORT: "9001" }),
+        env: expect.objectContaining({ NOVELSMITH_STUDIO_PORT: "9001" }),
       }),
     );
   });
 
   it("launches built JavaScript entries through node", async () => {
     accessMock.mockImplementation(async (path: string) => {
-      if (path === "/project/node_modules/@actalk/inkos-studio/dist/api/index.js") {
+      if (path === "/project/node_modules/@mrweijh/novelsmith-studio/dist/api/index.js") {
         return;
       }
       throw new Error(`missing: ${path}`);
@@ -62,11 +62,11 @@ describe("studio command", () => {
 
     expect(spawnMock).toHaveBeenCalledWith(
       "node",
-      ["/project/node_modules/@actalk/inkos-studio/dist/api/index.js"],
+      ["/project/node_modules/@mrweijh/novelsmith-studio/dist/api/index.js"],
       expect.objectContaining({
         cwd: "/project",
         stdio: "inherit",
-        env: expect.objectContaining({ INKOS_STUDIO_PORT: "4567" }),
+        env: expect.objectContaining({ NOVELSMITH_STUDIO_PORT: "4567" }),
       }),
     );
   });

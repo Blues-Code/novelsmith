@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { PipelineRunner, StateManager, splitChapters } from "@actalk/inkos-core";
+import { PipelineRunner, StateManager, splitChapters } from "@mrweijh/novelsmith-core";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { loadConfig, buildPipelineConfig, findProjectRoot, resolveBookId, log, logError } from "../utils.js";
@@ -126,7 +126,7 @@ importCommand
         log(`  Chapters imported: ${result.importedCount}`);
         log(`  Total characters: ${result.totalWords}`);
         log(`  Next chapter number: ${result.nextChapter}`);
-        log(`\nRun "inkos write next ${bookId}" to continue writing.`);
+        log(`\nRun "novelsmith write next ${bookId}" to continue writing.`);
       }
     } catch (e) {
       if (opts.json) {

@@ -42,38 +42,38 @@ function runStderr(args: string[]): { stdout: string; stderr: string; exitCode: 
 
 describe("CLI integration", () => {
   beforeAll(async () => {
-    projectDir = await mkdtemp(join(tmpdir(), "inkos-cli-test-"));
+    projectDir = await mkdtemp(join(tmpdir(), "novelsmith-cli-test-"));
   });
 
   afterAll(async () => {
     await rm(projectDir, { recursive: true, force: true });
   });
 
-  describe("inkos --version", () => {
+  describe("novelsmith --version", () => {
     it("prints version number", () => {
       const output = run(["--version"]);
       expect(output.trim()).toMatch(/^\d+\.\d+\.\d+$/);
     });
   });
 
-  describe("inkos --help", () => {
+  describe("novelsmith --help", () => {
     it("prints help with command list", () => {
       const output = run(["--help"]);
-      expect(output).toContain("inkos");
+      expect(output).toContain("novelsmith");
       expect(output).toContain("init");
       expect(output).toContain("book");
       expect(output).toContain("write");
     });
   });
 
-  describe("inkos init", () => {
+  describe("novelsmith init", () => {
     it("initializes project in current directory", () => {
       const output = run(["init"]);
       expect(output).toContain("Project initialized");
     });
 
-    it("creates inkos.json with correct structure", async () => {
-      const raw = await readFile(join(projectDir, "inkos.json"), "utf-8");
+    it("creates novelsmith.json with correct structure", async () => {
+      const raw = await readFile(join(projectDir, "novelsmith.json"), "utf-8");
       const config = JSON.parse(raw);
       expect(config.llm).toBeDefined();
       expect(config.llm.provider).toBeDefined();
@@ -84,7 +84,7 @@ describe("CLI integration", () => {
 
     it("creates .env file", async () => {
       const envContent = await readFile(join(projectDir, ".env"), "utf-8");
-      expect(envContent).toContain("INKOS_LLM_API_KEY");
+      expect(envContent).toContain("NOVELSMITH_LLM_API_KEY");
     });
 
     it("creates .gitignore", async () => {
@@ -100,20 +100,20 @@ describe("CLI integration", () => {
     });
   });
 
-  describe("inkos init <name>", () => {
+  describe("novelsmith init <name>", () => {
     it("creates project in subdirectory", () => {
       const output = run(["init", "subproject"]);
       expect(output).toContain("Project initialized");
     });
 
-    it("creates inkos.json in subdirectory", async () => {
-      const raw = await readFile(join(projectDir, "subproject", "inkos.json"), "utf-8");
+    it("creates novelsmith.json in subdirectory", async () => {
+      const raw = await readFile(join(projectDir, "subproject", "novelsmith.json"), "utf-8");
       const config = JSON.parse(raw);
       expect(config.name).toBe("subproject");
     });
   });
 
-  describe("inkos config set", () => {
+  describe("novelsmith config set", () => {
     it("sets a known config value", () => {
       const output = run(["config", "set", "llm.provider", "anthropic"]);
       expect(output).toContain("Set llm.provider = anthropic");
@@ -121,7 +121,7 @@ describe("CLI integration", () => {
 
     it("sets a nested config value", async () => {
       run(["config", "set", "llm.model", "gpt-5"]);
-      const raw = await readFile(join(projectDir, "inkos.json"), "utf-8");
+      const raw = await readFile(join(projectDir, "novelsmith.json"), "utf-8");
       const config = JSON.parse(raw);
       expect(config.llm.model).toBe("gpt-5");
     });
@@ -133,7 +133,7 @@ describe("CLI integration", () => {
     });
   });
 
-  describe("inkos config show", () => {
+  describe("novelsmith config show", () => {
     it("shows current config as JSON", () => {
       const output = run(["config", "show"]);
       const config = JSON.parse(output);
@@ -141,7 +141,7 @@ describe("CLI integration", () => {
     });
   });
 
-  describe("inkos book list", () => {
+  describe("novelsmith book list", () => {
     it("shows no books in empty project", () => {
       const output = run(["book", "list"]);
       expect(output).toContain("No books found");
@@ -154,7 +154,7 @@ describe("CLI integration", () => {
     });
   });
 
-  describe("inkos status", () => {
+  describe("novelsmith status", () => {
     it("shows project status with zero books", () => {
       const output = run(["status"]);
       expect(output).toContain("Books: 0");
@@ -173,16 +173,16 @@ describe("CLI integration", () => {
     });
   });
 
-  describe("inkos doctor", () => {
+  describe("novelsmith doctor", () => {
     it("checks environment health", () => {
       const { stdout } = runStderr(["doctor"]);
-      expect(stdout).toContain("InkOS Doctor");
+      expect(stdout).toContain("novelsmith Doctor");
       expect(stdout).toContain("Node.js >= 20");
-      expect(stdout).toContain("inkos.json");
+      expect(stdout).toContain("novelsmith.json");
     });
   });
 
-  describe("inkos analytics", () => {
+  describe("novelsmith analytics", () => {
     it("errors when no book exists", () => {
       const { exitCode } = runStderr(["analytics"]);
       expect(exitCode).not.toBe(0);

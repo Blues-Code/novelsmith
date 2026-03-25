@@ -29,7 +29,7 @@ async function extractPackedPackageJson(packDir: string) {
 
 describe("publish packaging", () => {
   it("rewrites workspace package versions for canary publishing", async () => {
-    const tempRoot = await mkdtemp(join(tmpdir(), "inkos-version-script-"));
+    const tempRoot = await mkdtemp(join(tmpdir(), "novelsmith-version-script-"));
     const tempPackagesDir = join(tempRoot, "packages");
     const tempCoreDir = join(tempPackagesDir, "core");
     const tempCliDir = join(tempPackagesDir, "cli");
@@ -40,20 +40,20 @@ describe("publish packaging", () => {
 
       await writeFile(
         join(tempRoot, "package.json"),
-        `${JSON.stringify({ name: "inkos", version: "0.4.6" }, null, 2)}\n`,
+        `${JSON.stringify({ name: "novelsmith", version: "0.4.6" }, null, 2)}\n`,
       );
       await writeFile(
         join(tempCoreDir, "package.json"),
-        `${JSON.stringify({ name: "@actalk/inkos-core", version: "0.4.6" }, null, 2)}\n`,
+        `${JSON.stringify({ name: "@mrweijh/novelsmith-core", version: "0.4.6" }, null, 2)}\n`,
       );
       await writeFile(
         join(tempCliDir, "package.json"),
         `${JSON.stringify(
           {
-            name: "@actalk/inkos",
+            name: "@mrweijh/novelsmith",
             version: "0.4.6",
             dependencies: {
-              "@actalk/inkos-core": "workspace:*",
+              "@mrweijh/novelsmith-core": "workspace:*",
               commander: "^13.0.0",
             },
           },
@@ -79,7 +79,7 @@ describe("publish packaging", () => {
       expect(rootPackageJson.version).toBe("0.4.8-canary.7");
       expect(corePackageJson.version).toBe("0.4.8-canary.7");
       expect(cliPackageJson.version).toBe("0.4.8-canary.7");
-      expect(cliPackageJson.dependencies["@actalk/inkos-core"]).toBe("0.4.8-canary.7");
+      expect(cliPackageJson.dependencies["@mrweijh/novelsmith-core"]).toBe("0.4.8-canary.7");
     } finally {
       await rm(tempRoot, { recursive: true, force: true });
     }
@@ -88,7 +88,7 @@ describe("publish packaging", () => {
   it("keeps source CLI dependencies linked through the workspace protocol", async () => {
     const cliPackageJson = JSON.parse(await readFile(resolve(cliDir, "package.json"), "utf-8"));
 
-    expect(cliPackageJson.dependencies["@actalk/inkos-core"]).toBe("workspace:*");
+    expect(cliPackageJson.dependencies["@mrweijh/novelsmith-core"]).toBe("workspace:*");
   });
 
   it("verifies publishable manifests before npm publish runs", async () => {
@@ -106,7 +106,7 @@ describe("publish packaging", () => {
   });
 
   it("replaces workspace dependencies before npm pack", { timeout: 30_000 }, async () => {
-    const packDir = await mkdtemp(join(tmpdir(), "inkos-cli-pack-"));
+    const packDir = await mkdtemp(join(tmpdir(), "novelsmith-cli-pack-"));
 
     try {
       const packedPackageJson = JSON.parse(await extractPackedPackageJson(packDir));
@@ -114,7 +114,7 @@ describe("publish packaging", () => {
         await readFile(resolve(workspaceRoot, "packages/core/package.json"), "utf-8"),
       );
 
-      expect(packedPackageJson.dependencies["@actalk/inkos-core"]).toBe(corePackageJson.version);
+      expect(packedPackageJson.dependencies["@mrweijh/novelsmith-core"]).toBe(corePackageJson.version);
     } finally {
       await rm(packDir, { recursive: true, force: true });
     }

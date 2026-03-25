@@ -1,7 +1,7 @@
 {
-  "name": "@actalk/inkos-core",
+  "name": "@mrweijh/novelsmith-core",
   "version": "0.5.1",
-  "description": "InkOS core: models, agents, pipeline, LLM integration",
+  "description": "novelsmith core: models, agents, pipeline, LLM integration",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Narcooo/inkos.git",
+    "url": "https://github.com/Narcooo/novelsmith.git",
     "directory": "packages/core"
   },
   "scripts": {
